@@ -58,14 +58,14 @@ app.get("/weather", (req, res) => {
       forecast(
         latitude,
         longitude,
-        (error, { temperature, precipProbability }) => {
+        (error, { temperature, precipProbability, cloudCover, windSpeed }) => {
           if (error) {
             res.send({ error: "unable to connect to location services" });
           }
 
           res.send({
             address: req.query.address,
-            forecast: `It is currently ${temperature} degrees in ${location}. There is a ${precipProbability}% chance of rain`,
+            forecast: `It is currently ${temperature} degrees in ${location}. There is a ${precipProbability}% chance of rain. The cloud cover is ${cloudCover} and the windspeed is ${windSpeed}.`,
             location,
             title: "Weather",
             name: "Andrew Hinger"

@@ -11,7 +11,9 @@ async function getForcast(lat, long, callback) {
       }
       callback(undefined, {
         temperature: data.currently.temperature,
-        precipProbability: data.currently.precipProbability
+        precipProbability: data.currently.precipProbability,
+        cloudCover: data.currently.cloudCover,
+        windSpeed: data.currently.windSpeed
       });
     })
     .catch(error => {
