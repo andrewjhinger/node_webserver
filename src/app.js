@@ -1,6 +1,8 @@
 const path = require("path");
 const express = require("express");
 const hbs = require("hbs");
+const forecast = require("../utils/forecast.js");
+const geocode = require("../utils/geocode.js");
 
 const app = express();
 
@@ -40,12 +42,46 @@ app.get("/help", (req, res) => {
 });
 
 app.get("/weather", (req, res) => {
-  res.render("weather", {
-    forecast: "It is snowing",
-    location: "Philadelphia",
-    title: "Weather",
-    name: "Andrew Hinger"
-  });
+  if (!req.query.address) {
+    return res.send({ error: "you must send an address" });
+  }
+
+  geocode(
+    req.query.address,
+    (error, { latitude, longitude, location } = {}) => {
+      if (error) {
+        return res.send({
+          error: "unable to find location. try another search. "
+        });
+      }
+
+      forecast(
+        latitude,
+        longitude,
+        (error, { temperature, precipProbability }) => {
+          if (error) {
+            res.send({ error: "unable to connect to location services" });
+          }
+
+          res.send({
+            address: req.query.address,
+            forecast: `It is currently ${temperature} degrees in ${location}. There is a ${precipProbability}% chance of rain`,
+            location,
+            title: "Weather",
+            name: "Andrew Hinger"
+          });
+        }
+      );
+    }
+  );
+});
+
+app.get("/products", (req, res) => {
+  if (!req.query.search) {
+    return res.send({ error: "you must provide a serach term" });
+  }
+  console.log(req.query);
+  res.send({ products: [] });
 });
 
 app.get("/help/*", (req, res) => {
